@@ -16,12 +16,14 @@ name = 'node-template'
 targets = ['x86_64-unknown-linux-gnu']
 
 [build-dependencies]
-substrate-build-script-utils = '2.0.0'
+#substrate-build-script-utils = {version = '2.0.0'}
+substrate-build-script-utils = {version = '2.0.0', optional = true } # add optional = true will be error
 frame-benchmarking-cli = { version = '2.0.0', optional = true } # add frame-benchmarking-cli = '2.0.0'
 
 [dependencies]
 jsonrpc-core = '15.0.0'
-structopt = '0.3.8'
+#structopt = '0.3.8'
+structopt = {version = '0.3.8', optional = true } # add optional = true will be error
 
 # local dependencies
 node-template-runtime = { path = '../runtime', version = '2.0.0' }
@@ -29,11 +31,12 @@ node-template-runtime = { path = '../runtime', version = '2.0.0' }
 # Substrate dependencies
 # for Substrate benchmark
 frame-benchmarking = '2.0.0' # add frame-benchmarking = '2.0.0'
-frame-benchmarking-cli = '2.0.0' # add frame-benchmarking-cli = '2.0.0'
+frame-benchmarking-cli = {version = '2.0.0', optional = true } # add frame-benchmarking-cli = '2.0.0'
 
 pallet-transaction-payment-rpc = '2.0.0'
 sc-basic-authorship = '0.8.0'
-sc-cli = { features = ['wasmtime'], version = '0.8.0' }
+#sc-cli = {features = ['wasmtime'], version = '0.8.0'}
+sc-cli = { features = ['wasmtime'], version = '0.8.0', optional = true } # add optional = true will be error
 sc-client-api = '2.0.0'
 sc-consensus = '0.8.0'
 sc-consensus-aura = '0.8.0'
@@ -41,7 +44,7 @@ sc-executor = { features = ['wasmtime'], version = '0.8.0' }
 sc-finality-grandpa = '0.8.0'
 sc-rpc = '2.0.0'
 sc-rpc-api = '0.8.0'
-sc-service = { features = ['wasmtime'], version = '0.8.0' }
+sc-service = { features = ['wasmtime'], version = '0.8.0'}
 sc-transaction-pool = '2.0.0'
 sp-api = '2.0.0'
 sp-block-builder = '2.0.0'
@@ -58,9 +61,23 @@ substrate-frame-rpc-system = '2.0.0'
 [features]
 default = ['cli'] # add cli
 cli = [
-    "frame-benchmarking-cli"
+    "wasmi-errno",
+    "sc-cli",
+    "frame-benchmarking-cli",
+#    "sc-executor",
+    "structopt",
+    "substrate-build-script-utils",
 ]
 runtime-benchmarks = [
     "node-template-runtime/runtime-benchmarks",
     "frame-benchmarking-cli"
 ]
+
+wasmtime = [
+    "sc-executor/wasmtime",
+]
+
+wasmi-errno = [
+    "sc-executor/wasmi-errno",
+]
+

@@ -272,6 +272,10 @@ impl pallet_poe::Trait for Runtime {
     type Event = Event;
 }
 
+impl pallet_benchmark_demo::Trait for Runtime {
+    type  Event = Event;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -290,6 +294,7 @@ construct_runtime!(
         // Include the custom logic from the template pallet in the runtime.
         TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
         PoeModule: pallet_poe::{Module, Call, Storage, Event<T>},
+        BenchMarkDemo: pallet_benchmark_demo::{Module, Call, Storage, Event<T>},
     }
 );
 
@@ -479,6 +484,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, pallet_balances, Balances);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
+            add_benchmark!(params, batches, pallet_benchmark_demo, BenchMarkDemo);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

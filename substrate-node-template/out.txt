@@ -1,0 +1,155 @@
+Pallet: "frame_system", Extrinsic: "remark", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Pallet: "frame_system", Extrinsic: "set_heap_pages", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Median Slopes Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=        2
+              µs
+
+Reads = 0
+Writes = 1
+Min Squares Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=        2
+              µs
+
+Reads = 0
+Writes = 1
+Pallet: "frame_system", Extrinsic: "set_changes_trie_config", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Pallet: "frame_system", Extrinsic: "set_storage", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Pallet: "frame_system", Extrinsic: "kill_storage", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Pallet: "frame_system", Extrinsic: "kill_prefix", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Pallet: "frame_system", Extrinsic: "suicide", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Median Slopes Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       27
+              µs
+
+Reads = 0
+Writes = 0
+Min Squares Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       27
+              µs
+
+Reads = 0
+Writes = 0
+Pallet: "pallet_balances", Extrinsic: "transfer", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Median Slopes Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       53
+              µs
+
+Reads = 1
+Writes = 1
+Min Squares Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       53
+              µs
+
+Reads = 1
+Writes = 1
+Pallet: "pallet_balances", Extrinsic: "transfer_keep_alive", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Median Slopes Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       38
+              µs
+
+Reads = 1
+Writes = 1
+Min Squares Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       38
+              µs
+
+Reads = 1
+Writes = 1
+Pallet: "pallet_balances", Extrinsic: "set_balance_creating", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Median Slopes Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       26
+              µs
+
+Reads = 1
+Writes = 1
+Min Squares Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       26
+              µs
+
+Reads = 1
+Writes = 1
+Pallet: "pallet_balances", Extrinsic: "set_balance_killing", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Median Slopes Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       30
+              µs
+
+Reads = 1
+Writes = 1
+Min Squares Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       30
+              µs
+
+Reads = 1
+Writes = 1
+Pallet: "pallet_balances", Extrinsic: "force_transfer", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Median Slopes Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       51
+              µs
+
+Reads = 2
+Writes = 2
+Min Squares Analysis
+========
+-- Extrinsic Time --
+
+Model:
+Time ~=       51
+              µs
+
+Reads = 2
+Writes = 2
+Pallet: "pallet_timestamp", Extrinsic: "set", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Pallet: "pallet_timestamp", Extrinsic: "on_finalize", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
+Pallet: "pallet_benchmark_demo", Extrinsic: "do_something", Lowest values: [], Highest values: [], Steps: [0], Repeat: 1
