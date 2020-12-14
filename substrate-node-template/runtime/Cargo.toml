@@ -26,7 +26,7 @@ serde = { features = ['derive'], optional = true, version = '1.0.101' }
 
 # local dependencies
 pallet-template = { path = '../pallets/template', default-features = false, version = '2.0.0' }
-pallet-poe = {path = '../pallets/poe', default-features = false, version = '2.0.0' }
+pallet-poe = { path = '../pallets/poe', default-features = false, version = '2.0.0' }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '2.0.0' }
@@ -75,12 +75,15 @@ std = [
     'frame-system/std',
     'frame-system-rpc-runtime-api/std',
     'pallet-aura/std',
-    'pallet-balances/std',
+
     'pallet-grandpa/std',
     'pallet-randomness-collective-flip/std',
     'pallet-sudo/std',
-    'pallet-template/std',
+
+    # for benchmark
+    'pallet-balances/std',
     'pallet-timestamp/std',
+
     'pallet-transaction-payment/std',
     'pallet-transaction-payment-rpc-runtime-api/std',
     'sp-api/std',
@@ -94,6 +97,7 @@ std = [
     'sp-std/std',
     'sp-transaction-pool/std',
     'sp-version/std',
+
     'pallet-template/std',
     'pallet-poe/std',
 ]

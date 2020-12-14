@@ -17,6 +17,7 @@ targets = ['x86_64-unknown-linux-gnu']
 
 [build-dependencies]
 substrate-build-script-utils = '2.0.0'
+frame-benchmarking-cli = { version = '2.0.0', optional = true } # add frame-benchmarking-cli = '2.0.0'
 
 [dependencies]
 jsonrpc-core = '15.0.0'
@@ -26,8 +27,10 @@ structopt = '0.3.8'
 node-template-runtime = { path = '../runtime', version = '2.0.0' }
 
 # Substrate dependencies
-frame-benchmarking = '2.0.0'
-frame-benchmarking-cli = '2.0.0'
+# for Substrate benchmark
+frame-benchmarking = '2.0.0' # add frame-benchmarking = '2.0.0'
+frame-benchmarking-cli = '2.0.0' # add frame-benchmarking-cli = '2.0.0'
+
 pallet-transaction-payment-rpc = '2.0.0'
 sc-basic-authorship = '0.8.0'
 sc-cli = { features = ['wasmtime'], version = '0.8.0' }
@@ -53,5 +56,11 @@ sp-transaction-pool = '2.0.0'
 substrate-frame-rpc-system = '2.0.0'
 
 [features]
-default = []
-runtime-benchmarks = ['node-template-runtime/runtime-benchmarks']
+default = ['cli'] # add cli
+cli = [
+    "frame-benchmarking-cli"
+]
+runtime-benchmarks = [
+    "node-template-runtime/runtime-benchmarks",
+    "frame-benchmarking-cli"
+]
