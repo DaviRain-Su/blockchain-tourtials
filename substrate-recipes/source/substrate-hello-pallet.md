@@ -94,7 +94,7 @@ pub fn say_hello(origin) -> DispatchResult {
 
 打印到终端从rust程序中通常是非常简单的时候println!宏，但是，substrate 运行时被编译为WebAssembly和常规的二进制文件，并且不能访问rust的标准库，这意味着我们不能使用常规的println! 我们鼓励你修改代码，尝试使用println并确认他不会编译，尽管如此，从运行时打印消息对于记录信息和调试都是有用的。
 
-![test](/Users/suyinrong/bitcoin-proj/substrate-course/substrate-recipes/pic/substrate-architecture.png)
+![test](../pic/substrate-architecture.png)
 
 在我们的pallet顶部，我们导入了sp_runtime运行时[print](https://substrate.dev/rustdocs/v2.0.0/sp_runtime/fn.print.html)函数，这个特殊的函数允许运行时想节点外部传递一条打印消息，这条消息没有被编译到wasm，并且可以访问标准库并执行常规IO，这个函数只能打印实现可[Printable triat](https://substrate.dev/rustdocs/v2.0.0/sp_runtime/traits/trait.Printable.html)的item. 幸运的是，所有的基本类型都已经实现了这个trait， 你也可以Wie自己的数据类型实现这个trait。
 
