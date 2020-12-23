@@ -96,7 +96,7 @@ decl_module! {
         }
 
         // #[weight = 0]
-        // pub fn transfer_claim(origin, claim: Vec<u8>) ->dispatch::DispatchResult {
+        // pub fn transfer_claim(origin, claim: Vec<u8>, ) ->dispatch::DispatchResult {
         //
         // 	let sender = ensure_signed(origin)?;
         //
