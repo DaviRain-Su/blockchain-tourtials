@@ -4,9 +4,9 @@
 
   - Pallets
 
-    - Printing to the Node Log
+    - [Printing to the Node Log](./source/substrate-hello-pallet.md)
     - Emitting Events
-    - Storage Maps
+    - [Storage Maps](./source/substrate-storage-map.md)
     - Cache Locally > Storage Calls
     - Using Vectors as Sets
     - Using Maps as Sets
