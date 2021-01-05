@@ -276,9 +276,6 @@ impl pallet_benchmark_demo::Trait for Runtime {
     type  Event = Event;
 }
 
-impl sum_storage::Trait for Runtime {
-    type Event = Event;
-}
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -299,8 +296,6 @@ construct_runtime!(
         TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
         PoeModule: pallet_poe::{Module, Call, Storage, Event<T>},
         BenchMarkDemo: pallet_benchmark_demo::{Module, Call, Storage, Event<T>},
-
-        SumStorage: sum_storage::{Module, Call, Storage, Event},
     }
 );
 

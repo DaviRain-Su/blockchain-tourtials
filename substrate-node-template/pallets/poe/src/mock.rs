@@ -1,17 +1,17 @@
-// use crate::{Module, Trait};
+use crate::{Module, Trait};
 use sp_core::H256;
 use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
 use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup}, testing::Header, Perbill,
 };
 use frame_system as system;
+use sp_io;
 
 impl_outer_origin! {
 	pub enum Origin for Test {}
 }
 
 // Configure a mock runtime to test the pallet.
-
 #[derive(Clone, Eq, PartialEq)]
 pub struct Test;
 parameter_types! {
@@ -53,9 +53,9 @@ impl Trait for Test {
 	type Event = ();
 }
 
-// pub type TemplateModule = Module<Test>;
+pub type PoeModule = Module<Test>;
 
-// // Build genesis storage according to the mock runtime.
-// pub fn new_test_ext() -> sp_io::TestExternalities {
-// 	system::GenesisConfig::default().build_storage::<Test>().unwrap().into()
-// }
+// Build genesis storage according to the mock runtime.
+pub fn new_test_ext() -> sp_io::TestExternalities {
+	system::GenesisConfig::default().build_storage::<Test>().unwrap().into()
+}

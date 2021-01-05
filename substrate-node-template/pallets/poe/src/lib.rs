@@ -7,11 +7,12 @@ use frame_support::{decl_error, decl_event, decl_module, decl_storage, dispatch,
 use frame_system::ensure_signed;
 use sp_std::prelude::*;
 
-// #[cfg(test)]
-// mod mock;
 
-// #[cfg(test)]
-// mod tests;
+
+#[cfg(test)]
+mod tests;
+mod mock;
+
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
@@ -38,7 +39,6 @@ decl_event!(
         AccountId = <T as frame_system::Trait>::AccountId,
     {
         ClaimCreated(AccountId, Vec<u8>),
-
         ClaimRevoked(AccountId, Vec<u8>),
     }
 );
@@ -63,13 +63,17 @@ decl_module! {
         // Events must be initialized if they are used by the pallet.
         fn deposit_event() = default;
 
+        // origin 交易的发送方
+        // claim 交易文件的哈希值
         #[weight = 0]
         pub fn create_claim(origin, claim: Vec<u8>) -> dispatch::DispatchResult {
+            // 校验交易的发送方是签名的，获取交易发送方的accountId sender
             let sender = ensure_signed(origin)?;
 
+            // 校验不存在
             ensure!(!Proofs::<T>::contains_key(&claim), Error::<T>::ProofAlreadyExist);
 
-            Proofs::<T>::insert(&claim, (sender.clone(), frame_system::Module::<T>::block_number()));
+            Proofs::<T>::insert(&claim, (sender.clone(), frame_system::Module::<T>::block_number())); //区块数
 
             Self::deposit_event(RawEvent::ClaimCreated(sender, claim));
 
@@ -78,7 +82,6 @@ decl_module! {
 
         #[weight = 0]
         pub fn revoke_claim(origin, claim: Vec<u8>) -> dispatch::DispatchResult {
-
             let sender = ensure_signed(origin)?;
 
             ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimNotExist);
@@ -89,19 +92,24 @@ decl_module! {
 
             Proofs::<T>::remove(&claim);
 
-
             Self::deposit_event(RawEvent::ClaimRevoked(sender, claim));
 
             Ok(())
         }
 
-        // #[weight = 0]
-        // pub fn transfer_claim(origin, claim: Vec<u8>, ) ->dispatch::DispatchResult {
-        //
-        // 	let sender = ensure_signed(origin)?;
-        //
-        // 	ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimExit);
-        //
-        // }
+        #[weight = 0]
+        pub fn transfer_claim(origin, claim: Vec<u8>, dest: T::AccountId) ->dispatch::DispatchResult {
+        	let sender = ensure_signed(origin)?;
+
+        	ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimNotExist);
+
+            let (owner, _block_number) = Proofs::<T>::get(&claim);
+
+            ensure!(owner == sender, Error::<T>::NotClaimOwner);
+
+            Proofs::<T>::insert(&claim, (dest, frame_system::Module::<T>::block_number()));
+
+            Ok(())
+        }
     }
 }

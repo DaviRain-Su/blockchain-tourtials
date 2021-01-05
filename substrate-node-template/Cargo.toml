@@ -5,7 +5,5 @@ panic = 'unwind'
 members = [
     'node',
     'pallets/*',
-    'pallets/sum-storage/rpc',
-    'pallets/sum-storage/runtime-api',
     'runtime',
 ]
