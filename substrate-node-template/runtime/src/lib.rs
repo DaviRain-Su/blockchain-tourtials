@@ -268,13 +268,14 @@ impl pallet_template::Trait for Runtime {
     type Event = Event;
 }
 
+parameter_types! {
+    pub const ClaimLength: usize = 128;
+}
 impl pallet_poe::Trait for Runtime {
     type Event = Event;
+    type ClaimLength = ClaimLength;
 }
 
-impl pallet_benchmark_demo::Trait for Runtime {
-    type  Event = Event;
-}
 
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -295,7 +296,6 @@ construct_runtime!(
         // Include the custom logic from the template pallet in the runtime.
         TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
         PoeModule: pallet_poe::{Module, Call, Storage, Event<T>},
-        BenchMarkDemo: pallet_benchmark_demo::{Module, Call, Storage, Event<T>},
     }
 );
 

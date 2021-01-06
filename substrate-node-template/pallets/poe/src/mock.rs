@@ -5,7 +5,7 @@ use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup}, testing::Header, Perbill,
 };
 use frame_system as system;
-use sp_io;
+
 
 impl_outer_origin! {
 	pub enum Origin for Test {}
@@ -49,8 +49,14 @@ impl system::Trait for Test {
 	type SystemWeightInfo = ();
 }
 
+parameter_types! {
+	// 设置的存证的长度最大为2
+	pub const ClaimLength : usize = 128;
+}
+
 impl Trait for Test {
 	type Event = ();
+	type ClaimLength = ClaimLength;
 }
 
 pub type PoeModule = Module<Test>;

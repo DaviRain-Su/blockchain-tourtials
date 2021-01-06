@@ -3,7 +3,7 @@
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
-use frame_support::{decl_error, decl_event, decl_module, decl_storage, dispatch, ensure};
+use frame_support::{decl_error, decl_event, decl_module, decl_storage, dispatch, ensure, traits::Get};
 use frame_system::ensure_signed;
 use sp_std::prelude::*;
 
@@ -11,6 +11,8 @@ use sp_std::prelude::*;
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
 mod mock;
 
 
@@ -18,6 +20,9 @@ mod mock;
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+
+    /// 配置存证vec的长度上限
+    type ClaimLength: Get<usize>;
 }
 
 // The pallet's runtime storage items.
@@ -48,7 +53,8 @@ decl_error! {
     pub enum Error for Module<T: Trait> {
         ProofAlreadyExist,
         CalimNotExist,
-        NotClaimOwner
+        NotClaimOwner,
+        ClaimLengthTooLarge
     }
 }
 
@@ -70,6 +76,10 @@ decl_module! {
             // 校验交易的发送方是签名的，获取交易发送方的accountId sender
             let sender = ensure_signed(origin)?;
 
+            // 检测交易存证的长度过大
+            // 保证插入的存证的数据长度小于或者等于ClaimLength
+            ensure!(claim.len() <= T::ClaimLength::get() , Error::<T>::ClaimLengthTooLarge);
+
             // 校验不存在
             ensure!(!Proofs::<T>::contains_key(&claim), Error::<T>::ProofAlreadyExist);
 
@@ -83,6 +93,8 @@ decl_module! {
         #[weight = 0]
         pub fn revoke_claim(origin, claim: Vec<u8>) -> dispatch::DispatchResult {
             let sender = ensure_signed(origin)?;
+            // 检测交易存证的长度过大
+            ensure!(claim.len() <= T::ClaimLength::get() , Error::<T>::ClaimLengthTooLarge);
 
             ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimNotExist);
 
@@ -100,6 +112,8 @@ decl_module! {
         #[weight = 0]
         pub fn transfer_claim(origin, claim: Vec<u8>, dest: T::AccountId) ->dispatch::DispatchResult {
         	let sender = ensure_signed(origin)?;
+        	// 检测交易存证的长度过大
+            ensure!(claim.len() <= T::ClaimLength::get() , Error::<T>::ClaimLengthTooLarge);
 
         	ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimNotExist);
 

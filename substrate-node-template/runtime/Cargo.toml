@@ -26,7 +26,6 @@ serde = { features = ['derive'], optional = true, version = '1.0.101' }
 # local dependencies
 pallet-template = { path = '../pallets/template', default-features = false, version = '2.0.0' }
 pallet-poe = { path = '../pallets/poe', default-features = false, version = '2.0.0' }
-pallet-benchmark-demo = { path = '../pallets/benchmark-demo', default-features = false, version = '2.0.0' }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '2.0.0' }
@@ -66,9 +65,6 @@ runtime-benchmarks = [
     'pallet-balances/runtime-benchmarks',
     'pallet-timestamp/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
-
-    # for this will be benchmark demo
-    'pallet-benchmark-demo/runtime-benchmarks',
 ]
 std = [
     'codec/std',
@@ -104,6 +100,4 @@ std = [
     # local pallet
     'pallet-template/std',
     'pallet-poe/std',
-    'pallet-benchmark-demo/std',
-#    'pallet-hello-substrate/std',
 ]
