@@ -277,7 +277,6 @@ impl pallet_poe::Trait for Runtime {
 }
 
 
-
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
