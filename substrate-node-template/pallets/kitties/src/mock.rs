@@ -1,5 +1,5 @@
 use crate::{Module, Trait};
-use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
+use frame_support::{impl_outer_origin, parameter_types, weights::Weight, traits::{OnFinalize,OnInitialize}};
 use frame_system as system;
 use sp_core::H256;
 use sp_runtime::{
@@ -50,17 +50,26 @@ impl system::Trait for Test {
     type SystemWeightInfo = ();
 }
 
-parameter_types! {
-    // 设置的存证的长度最大为2
-    pub const ClaimLength : usize = 128;
-}
+
+type Randomness = pallet_randomness_collective_flip::Module<Test>;
 
 impl Trait for Test {
     type Event = ();
-    type ClaimLength = ClaimLength;
+    type Randomness = Randomness;
 }
 
-pub type PoeModule = Module<Test>;
+pub type KittiesModule = Module<Test>;
+pub type System = frame_system::Module<Test>;
+
+pub fn run_to_block(n: u64) {
+    while System::block_number() < n {
+        KittiesModule::on_finalize(System::block_number());
+        System::on_finalize(System::block_number());
+        System::set_block_number(System::block_number() + 1);
+        System::on_initialize(System::block_number());
+        KittiesModule::on_initialize(System::block_number());
+    }
+}
 
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {

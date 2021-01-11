@@ -40,6 +40,7 @@ pub use pallet_timestamp::Call as TimestampCall;
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
+pub use pallet_kitties;
 /// Import the template pallet.
 pub use pallet_template;
 
@@ -268,14 +269,19 @@ impl pallet_template::Trait for Runtime {
     type Event = Event;
 }
 
+impl pallet_kitties::Trait for Runtime {
+    type Event = Event;
+    type Randomness = RandomnessCollectiveFlip;
+}
+
 parameter_types! {
     pub const ClaimLength: usize = 128;
 }
+
 impl pallet_poe::Trait for Runtime {
     type Event = Event;
     type ClaimLength = ClaimLength;
 }
-
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -295,6 +301,7 @@ construct_runtime!(
         // Include the custom logic from the template pallet in the runtime.
         TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
         PoeModule: pallet_poe::{Module, Call, Storage, Event<T>},
+        KittiesModule: pallet_kitties::{Module, Call, Storage, Event<T>},
     }
 );
 

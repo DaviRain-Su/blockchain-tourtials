@@ -3,18 +3,17 @@
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// https://substrate.dev/docs/en/knowledgebase/runtime/frame
-use frame_support::{decl_error, decl_event, decl_module, decl_storage, dispatch, ensure, traits::Get};
+use frame_support::{
+    decl_error, decl_event, decl_module, decl_storage, dispatch, ensure, traits::Get,
+};
 use frame_system::ensure_signed;
 use sp_std::prelude::*;
-
-
 
 #[cfg(test)]
 mod tests;
 
 #[cfg(test)]
 mod mock;
-
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Trait: frame_system::Trait {
@@ -111,11 +110,11 @@ decl_module! {
 
         #[weight = 0]
         pub fn transfer_claim(origin, claim: Vec<u8>, dest: T::AccountId) ->dispatch::DispatchResult {
-        	let sender = ensure_signed(origin)?;
-        	// 检测交易存证的长度过大
+            let sender = ensure_signed(origin)?;
+            // 检测交易存证的长度过大
             ensure!(claim.len() <= T::ClaimLength::get() , Error::<T>::ClaimLengthTooLarge);
 
-        	ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimNotExist);
+            ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimNotExist);
 
             let (owner, _block_number) = Proofs::<T>::get(&claim);
 

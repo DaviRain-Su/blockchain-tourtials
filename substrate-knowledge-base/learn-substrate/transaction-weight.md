@@ -24,7 +24,7 @@ The maximum block weight should be equivalent to one-third of the target block t
 
 Weights represent the *limited* time that your blockchain has to validate a block. This includes computational cycles, and storage I/O. A custom implementation may use complex structures to express this. Substrate weights are simply a [numeric value](https://substrate.dev/rustdocs/v2.0.0/frame_support/weights/type.Weight.html).
 
-权重代表你的区块链验证一个区块的有限时间。这包括计算周期，以及存储I/O。定制的实现可能会使用复杂的结构来表达。基底权重只是一个数值。
+权重代表你的区块链验证一个区块的有限时间。这包括计算周期，以及存储I/O。定制的实现可能会使用复杂的结构来表达。substrate权重只是一个数值。
 
 A weight calculation should always:
 
@@ -32,7 +32,7 @@ A weight calculation should always:
 
 - Be computable **ahead of dispatch**. A block producer should be able to examine the weight of a dispatchable before actually deciding to accept it or not.
 
-  在派遣前要有可计算性。区块生产者应该能够在实际决定是否接受一个可派发的货物之前审查其重量。
+  在dispatch前要有可计算性。区块生产者应该能够在实际决定是否接受一个可派发的货物之前审查其重量。
 
 - Consume few resources itself. It does not make sense to consume similar resources computing a transaction's weight as would be spent to execute it. Thus, weight computation should be much lighter than dispatch.
 
