@@ -70,6 +70,9 @@ pub type Hash = sp_core::H256;
 /// Digest item type.
 pub type DigestItem = generic::DigestItem<Hash>;
 
+/// for kitties type
+pub type KittyIndex = u32;
+
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
 /// of data like extrinsics, allowing for them to continue syncing the network through upgrades
@@ -269,8 +272,11 @@ impl pallet_template::Trait for Runtime {
     type Event = Event;
 }
 
+
+
 impl pallet_kitties::Trait for Runtime {
     type Event = Event;
+    type KittyIndex = KittyIndex;
     type Randomness = RandomnessCollectiveFlip;
 }
 

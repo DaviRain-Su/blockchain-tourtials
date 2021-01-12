@@ -1,5 +1,9 @@
 use crate::{Module, Trait};
-use frame_support::{impl_outer_origin, parameter_types, weights::Weight, traits::{OnFinalize,OnInitialize}};
+use frame_support::{
+    impl_outer_origin, parameter_types,
+    traits::{OnFinalize, OnInitialize},
+    weights::Weight,
+};
 use frame_system as system;
 use sp_core::H256;
 use sp_runtime::{
@@ -50,11 +54,11 @@ impl system::Trait for Test {
     type SystemWeightInfo = ();
 }
 
-
 type Randomness = pallet_randomness_collective_flip::Module<Test>;
 
 impl Trait for Test {
     type Event = ();
+    type KittyIndex = u32;
     type Randomness = Randomness;
 }
 
