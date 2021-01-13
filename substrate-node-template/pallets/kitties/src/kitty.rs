@@ -2,7 +2,8 @@ use crate::dna::DNA;
 use codec::{Decode, Encode};
 
 #[derive(Encode, Decode, Debug, Clone)]
-pub struct Parents {
+pub struct Parents
+{
     father: DNA,
     mother: DNA,
 }

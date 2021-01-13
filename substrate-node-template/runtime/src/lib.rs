@@ -272,12 +272,11 @@ impl pallet_template::Trait for Runtime {
     type Event = Event;
 }
 
-
-
 impl pallet_kitties::Trait for Runtime {
     type Event = Event;
     type KittyIndex = KittyIndex;
     type Randomness = RandomnessCollectiveFlip;
+    type Currency = pallet_balances::Module<Self>;
 }
 
 parameter_types! {
@@ -410,7 +409,7 @@ impl_runtime_apis! {
             Aura::slot_duration()
         }
 
-        fn authorities() -> Vec<AuraId> {
+        fn authorities() ->  Vec<AuraId> {
             Aura::authorities()
         }
     }
