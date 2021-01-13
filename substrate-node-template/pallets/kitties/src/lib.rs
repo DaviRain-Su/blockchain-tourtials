@@ -3,6 +3,7 @@
 use codec::{Decode, Encode};
 use frame_support::{
     debug, decl_error, decl_event, decl_module, decl_storage, dispatch, ensure, traits::Randomness,
+    traits::Get,
     Parameter, StorageMap, StorageValue,
 };
 use frame_system::ensure_signed;
@@ -41,6 +42,8 @@ impl Kitty {
     }
 }
 
+type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
+
 //trait define
 pub trait Trait: frame_system::Trait {
     // 如果有触发事件，就必须包含这一行
@@ -62,6 +65,9 @@ pub trait Trait: frame_system::Trait {
         + AtLeast32BitUnsigned
         + Copy
         + Bounded;
+    // 创建kitty 的时候，需要质押的代币
+    type NewKittyReserve: Get<BalanceOf<Self>>;
+    // Currency 类型，用于质押等资产相关的操作
     type Currency: Currency<Self::AccountId> + ReservableCurrency<Self::AccountId>;
 }
 
@@ -118,6 +124,7 @@ decl_error! {
         KittyNotExists,
         NotKittyOwner,
         TransferToSelf,
+        MoneyNotEnough,
    }
 }
 
@@ -133,11 +140,12 @@ decl_module! {
         pub fn create(origin) -> dispatch::DispatchResult {
             let sender = ensure_signed(origin)?;
             let kitty_id = Self::next_kitty_id()?;
-
-
             let dna = Self::random_value(&sender);
 
             let kitty = Kitty::new().set_value(dna);
+
+            T::Currency::reserve(&sender, T::NewKittyReserve::get()).map_err(|_| Error::<T>::MoneyNotEnough)?;
+
             Self::insert_kitty(&sender, kitty_id, kitty);
             Self::deposit_event(RawEvent::Created(sender, kitty_id));
             Ok(())
@@ -311,6 +319,9 @@ impl<T: Trait> Module<T> {
         let new_dna = DNA::new().set_value(new_dna);
 
         let new_kitty = Kitty::new().set_value(new_dna);
+
+        T::Currency::reserve(&sender, T::NewKittyReserve::get()).map_err(|_| Error::<T>::MoneyNotEnough)?;
+
         Self::insert_kitty(sender, kitty_id, new_kitty);
         Ok(kitty_id)
     }

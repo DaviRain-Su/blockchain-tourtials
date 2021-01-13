@@ -272,10 +272,15 @@ impl pallet_template::Trait for Runtime {
     type Event = Event;
 }
 
+parameter_types! {
+    pub const NewKittyReserve: u32 = 5000000;
+}
+
 impl pallet_kitties::Trait for Runtime {
     type Event = Event;
     type KittyIndex = KittyIndex;
     type Randomness = RandomnessCollectiveFlip;
+    type NewKittyReserve = NewKittyReserve;
     type Currency = pallet_balances::Module<Self>;
 }
 

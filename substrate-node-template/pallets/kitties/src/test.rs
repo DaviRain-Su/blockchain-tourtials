@@ -1,4 +1,5 @@
 use crate::{mock::*, Error, Event};
+use crate::*;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::EventRecord;
 use frame_system::Phase;
@@ -15,13 +16,21 @@ fn owner_kitties_can_append_values() {
         assert_ok!(KittiesModule::create(Origin::signed(1)));
 
         assert_eq!(
-            System::events(),
-            vec![EventRecord {
-                phase: Phase::Initialization,
-                event: TestEvent::kitties_event(Event::<Test>::Created(1u64, 0)),
-                topics: vec![],
-            }]
+            System::events()[1].event,
+            // vec![EventRecord {
+            //     phase: Phase::Initialization,
+            //     event: TestEvent::kitties_event(Event::<Test>::Created(1u64, 0)),
+            //     topics: vec![],
+            // }]
+            TestEvent::kitties_event(Event::<Test>::Created(1u64, 0))
         )
+    })
+}
+#[test]
+fn owner_kitties_failed_when_no_enought_money() {
+    new_test_ext().execute_with(|| {
+        run_to_block(10);
+        assert_noop!(KittiesModule::create(Origin::signed(9)), Error::<Test>::MoneyNotEnough);
     })
 }
 
@@ -37,6 +46,11 @@ fn transfer_kitty_works() {
         assert_eq!(
             System::events(),
             vec![
+                // EventRecord {
+                //     phase: Phase::Initialization,
+                //     event: TestEvent::kitties_event(Event::<Test>::Reserved(1u64, 5000)),
+                //     topics: vec![],
+                // },
                 EventRecord {
                     phase: Phase::Initialization,
                     event: TestEvent::kitties_event(Event::<Test>::Created(1u64, 0)),
@@ -105,16 +119,31 @@ fn breed_kitty_work() {
         assert_eq!(
             System::events(),
             vec![
+                // EventRecord {
+                //     phase: Phase::Initialization,
+                //     event: TestEvent::kitties_event(Event::<Test>::Reserved(1u64, 5000)),
+                //     topics: vec![],
+                // },
                 EventRecord {
                     phase: Phase::Initialization,
                     event: TestEvent::kitties_event(Event::<Test>::Created(1u64, 0)),
                     topics: vec![],
                 },
+                // EventRecord {
+                //     phase: Phase::Initialization,
+                //     event: TestEvent::kitties_event(Event::<Test>::Reserved(1u64, 5000)),
+                //     topics: vec![],
+                // },
                 EventRecord {
                     phase: Phase::Initialization,
                     event: TestEvent::kitties_event(Event::<Test>::Created(1u64, 1)),
                     topics: vec![],
                 },
+                // EventRecord {
+                //     phase: Phase::Initialization,
+                //     event: TestEvent::kitties_event(Event::<Test>::Reserved(1u64, 5000)),
+                //     topics: vec![],
+                // },
                 EventRecord {
                     phase: Phase::Initialization,
                     event: TestEvent::kitties_event(Event::<Test>::Created(1u64, 2)),

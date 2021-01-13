@@ -82,10 +82,14 @@ impl balances::Trait for Test {
 }
 type Randomness = pallet_randomness_collective_flip::Module<Test>;
 
+parameter_types! {
+    pub const NewKittyReserve: u64 = 5_000;
+}
 impl Trait for Test {
     type Event = TestEvent;
     type KittyIndex = u32;
     type Randomness = Randomness;
+    type NewKittyReserve = NewKittyReserve;
     type Currency = balances::Module<Self>;
 }
 
@@ -110,7 +114,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .into();
 
     balances::GenesisConfig::<Test> {
-        balances: vec![(1, 5000), (2, 51000), (3, 52000), (4, 53000), (5, 54000)],
+        balances: vec![(1, 5000000), (2, 51000000), (3, 5200000), (4, 53000000), (5, 54000000)],
     }
     .assimilate_storage(&mut t)
     .unwrap();

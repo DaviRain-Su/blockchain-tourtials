@@ -16,7 +16,7 @@
 
 编程作业，需要完成以下要求并且提交代码链接：
 
-1. 支出视频中实现kitties的一个bug
+1. 指出视频中实现kitties的一个bug
 
 2. kittyindex不在pallet中指定，而是在runtime里面绑定
 
@@ -29,6 +29,22 @@
       以及和它一起breed过的另一半
 
    2. 分析时间空间复杂度，尽量使得操作的较为高效
+
+   Kitties
+
+   KittiesCount
+
+   KittyOwners
+
+   KittyTotal
+
+   KittiesParents
+
+   KittiesChidren
+
+   KittiesBrother
+
+   KittiesPartner
 
 5. 测试代码能检查event, 能测试所有的三个方法，能测试出所有定义的错误类型
 
