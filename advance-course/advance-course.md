@@ -49,7 +49,7 @@
     - membership
 - 作业
 
-## 第4课: off-chain worker 教程
+## 第4课:off-chain worker 教程
 
 - Substrate 密码学
 - 介绍及代码前期衔接
