@@ -12,7 +12,7 @@
 - 声明宏
 - 过程宏
 
-(the book ch19 06 macros)[https://doc.rust-lang.org/book/ch19-06-macros.html]
+[the book ch19 06 macros](https://doc.rust-lang.org/book/ch19-06-macros.html)
 
 
 ## Substrate 为什么使用宏
@@ -200,12 +200,6 @@ https://github.com/kaichaosun/play-substrate/blob/master/pallets/template/expand
 
 ## 其他宏
 
-将runtime_api中定义的接口暴露给客户端使用
-
-runtime - host，当需要runtime 中的函数需要调用host的函数时，需要使用runtime_interface, 
-
-runtime类比为蛋黄，host类比为蛋白
-
 
 decl_runtime_apis & impl_runtime_apis,定义runtime api: 
 
@@ -217,7 +211,11 @@ runtime_interface, 定义在runtime 里可以调用的Host提供的函数：
 
 https://substrate.dev/rustdocs/v2.0.0-alpha.8/sp_runtime_interface/attr.runtime_interface.html
 
+解释：将runtime_api中定义的接口暴露给客户端使用
 
+runtime - host，当需要runtime 中的函数需要调用host的函数时，需要使用runtime_interface, 
+
+runtime类比为蛋黄，host类比为蛋白
 
 
 

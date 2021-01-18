@@ -49,11 +49,16 @@ impl system::Trait for Test {
 	type SystemWeightInfo = ();
 }
 
-impl Trait for Test {
-	type Event = ();
+parameter_types! {
+	pub const ClaimLength : usize = 2;
 }
 
-pub type TemplateModule = Module<Test>;
+impl Trait for Test {
+	type Event = ();
+	type ClaimLength = ClaimLength;
+}
+
+pub type PoeModule = Module<Test>;
 
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {

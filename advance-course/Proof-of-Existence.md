@@ -86,6 +86,7 @@ decl_storage! {
     // This name may be updated, but each pallet in the runtime must use a unique name.
     // ---------------------------------
     trait Store for Module<T: Trait> as TemplateModule {
+        // Vec<u8> 存证文件的hash值
         Proofs get(fn proofs): map hasher(blake2_128_concat) Vec<u8> => (T::AccountId, T::BlockNumber);
     }
 }
@@ -144,12 +145,15 @@ decl_module! {
             Ok(())
         }
 
+        // origin 交易的发送方
+        // claim 交易文件的哈希值
         #[weight = 0]
         pub fn revoke_claim(origin, claim: Vec<u8>) -> dispatch::DispatchResult {
             let sender = ensure_signed(origin)?;
             // 检测交易存证的长度过大
-            ensure!(claim.len() <= T::ClaimLength::get() , Error::<T>::ClaimLengthTooLarge);
+            // ensure!(claim.len() <= T::ClaimLength::get() , Error::<T>::ClaimLengthTooLarge);
 
+            // 检测文件是否存在
             ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimNotExist);
 
             let (owner, _block_number) = Proofs::<T>::get(&claim);
@@ -163,12 +167,14 @@ decl_module! {
             Ok(())
         }
 
+        // 转移存证文件
         #[weight = 0]
         pub fn transfer_claim(origin, claim: Vec<u8>, dest: T::AccountId) ->dispatch::DispatchResult {
         	let sender = ensure_signed(origin)?;
         	// 检测交易存证的长度过大
-            ensure!(claim.len() <= T::ClaimLength::get() , Error::<T>::ClaimLengthTooLarge);
+            // ensure!(claim.len() <= T::ClaimLength::get() , Error::<T>::ClaimLengthTooLarge);
 
+            // 检测存证文件是否存在
         	ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::CalimNotExist);
 
             let (owner, _block_number) = Proofs::<T>::get(&claim);
@@ -196,6 +202,7 @@ use sp_runtime::{
 use frame_system as system;
 
 
+// 为测试的test定义了一个Origin表示测试的发送方
 impl_outer_origin! {
 	pub enum Origin for Test {}
 }
@@ -218,7 +225,7 @@ impl system::Trait for Test {
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
-	type AccountId = u64;
+	type AccountId = u64; // AccuntId u64
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Header = Header;
 	type Event = ();
@@ -244,14 +251,14 @@ parameter_types! {
 }
 
 impl Trait for Test {
-	type Event = ();
+	type Event = (); // 空的元组默认实现了这个event的关联类型的约束
 	type ClaimLength = ClaimLength;
 }
 
 pub type PoeModule = Module<Test>;
 
 // Build genesis storage according to the mock runtime.
-pub fn new_test_ext() -> sp_io::TestExternalities {
+pub fn new_test_ext() -> sp_io::TestExternalities { // 返回了一个测试用的执行环境
 	system::GenesisConfig::default().build_storage::<Test>().unwrap().into()
 }
 
@@ -281,8 +288,8 @@ fn create_claim_failed_when_claim_already_exist() {
         let claim = vec![0, 1];
         let _ = PoeModule::create_claim(Origin::signed(1), claim.clone());
 
-        assert_noop!( // 不会修改链上的状态
-            PoeModule::create_claim(Origin::signed(1), claim.clone()),
+        assert_noop!( // assert_noops! 不会修改链上的状态
+            PoeModule::create_claim(Origin::signed(1), claim.clone()), // 断言生成的是error
             Error::<Test>::ProofAlreadyExist
         );
     })
