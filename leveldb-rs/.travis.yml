@@ -1,0 +1,48 @@
+language: rust
+cache: cargo
+sudo: required
+addons:
+  apt:
+    packages:
+      - libcurl4-openssl-dev
+      - libelf-dev
+      - libdw-dev
+      - binutils-dev
+
+rust:
+  - nightly
+
+before_script:
+  - pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
+  - cargo install cargo-travis || echo "Skipping cargo-travis installation as it is already cached"
+  - export PATH=$HOME/.cargo/bin:$PATH
+
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - travis-cargo build
+  - travis-cargo test
+
+after_success:
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then
+        cargo bench;
+    fi
+  - cargo coveralls --verbose
+
+env:
+  global:
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=""
+    - RUSTFLAGS="-C target-feature=+sse4.2"
+    - RUST_BACKTRACE=1
+
+dist: trusty
+
+addons:
+  apt:
+    packages:
+      - libcurl4-openssl-dev
+      - libelf-dev
+      - libdw-dev
+      - binutils-dev
+      - cmake
+    sources:
+      - kalakris-cmake

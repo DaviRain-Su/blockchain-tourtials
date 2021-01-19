@@ -1,0 +1,14 @@
+[package]
+name = "leveldb"
+version = "0.1.0"
+authors = ["Chao Sun <sunchao@apache.org>"]
+
+edition = "2018"
+
+[dependencies]
+crossbeam = "0.3.0" # for scoped threads
+lazy_static = "0.2" # for initializing static vars
+byteorder = "1"     # for reinterpreting bytes
+
+[dev-dependencies]
+rand = "0.3"
