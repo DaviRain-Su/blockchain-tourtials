@@ -5,7 +5,7 @@ This is Substrate course tourtial.
 
 [Substrate Recipes 中文	](./substrate-recipes/README.md)
 
-[链下工作机](./链下工作机(Off-chian Worker).md)
+[链下工作机](./off-chain-worker.md)
 
 ## 仓库外的资源
 
