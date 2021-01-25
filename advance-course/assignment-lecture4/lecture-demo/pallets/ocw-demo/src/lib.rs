@@ -51,8 +51,10 @@ pub const NUM_VEC_LEN: usize = 10;
 pub const UNSIGNED_TXS_PRIORITY: u64 = 100;
 
 // We are fetching information from the github public API about organization`substrate-developer-hub`.
-pub const HTTP_REMOTE_REQUEST: &str = "https://api.github.com/orgs/substrate-developer-hub";
-pub const HTTP_HEADER_USER_AGENT: &str = "jimmychu0807";
+// pub const HTTP_REMOTE_REQUEST: &str = "https://api.github.com/orgs/substrate-developer-hub";
+pub const HTTP_REMOTE_REQUEST: &str = "https://api.coincap.io/v2/assets/polkadot";
+pub const HTTP_HEADER_USER_AGENT: &str = "priceUsd";
+pub const HTTP_HEADER_PRICE_USD: &str = "priceUsd";
 
 pub const FETCH_TIMEOUT_PERIOD: u64 = 3000; // in milli-seconds
 pub const LOCK_TIMEOUT_EXPIRATION: u64 = FETCH_TIMEOUT_PERIOD + 1000; // in milli-seconds
@@ -92,7 +94,7 @@ pub mod crypto {
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
 pub struct Payload<Public> {
-	number: u32,
+	price: Vec<u8>,
 	public: Public
 }
 
@@ -135,6 +137,31 @@ impl fmt::Debug for GithubInfo {
 	}
 }
 
+
+#[derive(Deserialize, Encode, Decode, Default)]
+struct DotPrice {
+	#[serde(deserialize_with = "de_string_to_bytes")]
+	pub priceUsd: Vec<u8>,
+}
+
+impl DotPrice {
+	pub fn new() -> Self {
+		Self {
+			priceUsd: vec![],
+		}
+	}
+}
+
+impl fmt::Debug for DotPrice {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		write!(f, "priceUsd: {}", str::from_utf8(&self.priceUsd).map_err(|_| fmt::Error)?)
+	}
+}
+
+fn get_string_from_vec_u8(param: &[u8]) -> &str  {
+	str::from_utf8(param).unwrap()
+}
+
 /// This is the pallet's configuration trait
 pub trait Trait: system::Trait + CreateSignedTransaction<Call<Self>> {
 	/// The identifier type for an offchain worker.
@@ -147,8 +174,8 @@ pub trait Trait: system::Trait + CreateSignedTransaction<Call<Self>> {
 
 decl_storage! {
 	trait Store for Module<T: Trait> as Example {
-		/// A vector of recently submitted numbers. Bounded by NUM_VEC_LEN
-		Numbers get(fn numbers): VecDeque<u32>;
+		/// A vector of recently submitted prices. Bounded by NUM_VEC_LEN
+		Prices get(fn prices): VecDeque<Vec<u8>>; // Vec<u8> 是价格
 	}
 }
 
@@ -158,8 +185,8 @@ decl_event!(
 	where
 		AccountId = <T as system::Trait>::AccountId,
 	{
-		/// Event generated when a new number is accepted to contribute to the average.
-		NewNumber(Option<AccountId>, u32),
+		/// Event generated when a new Price is accepted to contribute to the average.
+		NewPrice(Option<AccountId>, Vec<u8>),
 	}
 );
 
@@ -188,55 +215,57 @@ decl_module! {
 		fn deposit_event() = default;
 
 		#[weight = 10000]
-		pub fn submit_number_signed(origin, number: u32) -> DispatchResult {
+		pub fn submit_price_signed(origin, price: Vec<u8>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
-			debug::info!("submit_number_signed: ({}, {:?})", number, who);
-			Self::append_or_replace_number(number);
+			debug::info!("submit_price_signed: ({}, {:?})", get_string_from_vec_u8(&price), who);
+			Self::append_or_replace_price(price.clone());
 
-			Self::deposit_event(RawEvent::NewNumber(Some(who), number));
+			Self::deposit_event(RawEvent::NewPrice(Some(who), price));
 			Ok(())
 		}
 
 		#[weight = 10000]
-		pub fn submit_number_unsigned(origin, number: u32) -> DispatchResult {
+		pub fn submit_price_unsigned(origin, price: Vec<u8>) -> DispatchResult {
 			let _ = ensure_none(origin)?;
-			debug::info!("submit_number_unsigned: {}", number);
-			Self::append_or_replace_number(number);
+			debug::info!("submit_price_unsigned: {}", get_string_from_vec_u8(&price));
+			Self::append_or_replace_price(price.clone());
 
-			Self::deposit_event(RawEvent::NewNumber(None, number));
+			Self::deposit_event(RawEvent::NewPrice(None, price));
 			Ok(())
 		}
 
 		#[weight = 10000]
-		pub fn submit_number_unsigned_with_signed_payload(origin, payload: Payload<T::Public>,
+		pub fn submit_price_unsigned_with_signed_payload(origin, payload: Payload<T::Public>,
 			_signature: T::Signature) -> DispatchResult
 		{
 			let _ = ensure_none(origin)?;
 			// we don't need to verify the signature here because it has been verified in
 			//   `validate_unsigned` function when sending out the unsigned tx.
-			let Payload { number, public } = payload;
-			debug::info!("submit_number_unsigned_with_signed_payload: ({}, {:?})", number, public);
-			Self::append_or_replace_number(number);
+			let Payload { price, public } = payload;
+			debug::info!("submit_price_unsigned_with_signed_payload: ({}, {:?})", get_string_from_vec_u8(&price), public);
+			Self::append_or_replace_price(price.clone());
 
-			Self::deposit_event(RawEvent::NewNumber(None, number));
+			Self::deposit_event(RawEvent::NewPrice(None, price));
 			Ok(())
 		}
 
 		fn offchain_worker(block_number: T::BlockNumber) {
 			debug::info!("Entering off-chain worker");
 
+    		let mut dot_price : DotPrice = DotPrice::new();
+			let _ret = Self::fetch_price_from_coincap_assets_info(&mut dot_price);
 			// Here we are showcasing various techniques used when running off-chain workers (ocw)
 			// 1. Sending signed transaction from ocw
 			// 2. Sending unsigned transaction from ocw
 			// 3. Sending unsigned transactions with signed payloads from ocw
 			// 4. Fetching JSON via http requests in ocw
-			const TX_TYPES: usize = 4;
+			const TX_TYPES: usize = 3;
 			let modu = block_number.try_into().map_or(TX_TYPES, |bn: usize| bn % TX_TYPES);
 			let result = match modu {
-				0 => Self::offchain_signed_tx(block_number),
-				1 => Self::offchain_unsigned_tx(block_number),
-				2 => Self::offchain_unsigned_tx_signed_payload(block_number),
-				3 => Self::fetch_github_info(),
+				0 => Self::offchain_signed_tx(/*block_number*/ dot_price),
+				1 => Self::offchain_unsigned_tx(/*block_number*/ dot_price),
+				2 => Self::offchain_unsigned_tx_signed_payload(/*block_number*/ dot_price),
+				// 3 => Self::fetch_github_info(),
 				_ => Err(Error::<T>::UnknownOffchainMux),
 			};
 
@@ -250,24 +279,24 @@ decl_module! {
 impl<T: Trait> Module<T> {
 	/// Append a new number to the tail of the list, removing an element from the head if reaching
 	///   the bounded length.
-	fn append_or_replace_number(number: u32) {
-		Numbers::mutate(|numbers| {
-			if numbers.len() == NUM_VEC_LEN {
-				let _ = numbers.pop_front();
+	fn append_or_replace_price(price: Vec<u8>) {
+		Prices::mutate(|prices| {
+			if prices.len() == NUM_VEC_LEN {
+				let _ = prices.pop_front();
 			}
-			numbers.push_back(number);
-			debug::info!("Number vector: {:?}", numbers);
+			prices.push_back(price.clone());
+			debug::info!("Price vector: {}", get_string_from_vec_u8(&price));
 		});
 	}
 
 	/// Check if we have fetched github info before. If yes, we can use the cached version
 	///   stored in off-chain worker storage `storage`. If not, we fetch the remote info and
 	///   write the info into the storage for future retrieval.
-	fn fetch_github_info() -> Result<(), Error<T>> {
+	fn fetch_price_from_coincap_assets_info(dot_price_par: &mut DotPrice) -> Result<(), Error<T>> {
 		// Create a reference to Local Storage value.
 		// Since the local storage is common for all offchain workers, it's a good practice
 		// to prepend our entry with the pallet name.
-		let s_info = StorageValueRef::persistent(b"offchain-demo::gh-info");
+		let s_info = StorageValueRef::persistent(b"offchain-demo::priceUsd");
 
 		// Local storage is persisted and shared between runs of the offchain workers,
 		// offchain workers may run concurrently. We can use the `mutate` function to
@@ -278,9 +307,10 @@ impl<T: Trait> Module<T> {
 		// the storage comprehensively.
 		//
 		// Ref: https://substrate.dev/rustdocs/v2.0.0/sp_runtime/offchain/storage/struct.StorageValueRef.html
-		if let Some(Some(gh_info)) = s_info.get::<GithubInfo>() {
+		if let Some(Some(dot_price)) = s_info.get::<DotPrice>() {
 			// gh-info has already been fetched. Return early.
-			debug::info!("cached gh-info: {:?}", gh_info);
+			debug::info!("cached DotPrice: {:?}", dot_price);
+			dot_price_par.priceUsd = dot_price.priceUsd;
 			return Ok(());
 		}
 
@@ -304,15 +334,19 @@ impl<T: Trait> Module<T> {
 		// ref: https://substrate.dev/rustdocs/v2.0.0/sp_runtime/offchain/storage_lock/struct.StorageLock.html#method.try_lock
 		if let Ok(_guard) = lock.try_lock() {
 			match Self::fetch_n_parse() {
-				Ok(gh_info) => { s_info.set(&gh_info); }
-				Err(err) => { return Err(err); }
+				Ok(gh_info) => {
+					s_info.set(&gh_info);
+					dot_price_par.priceUsd = gh_info.priceUsd;
+				},
+				Err(err) => { return Err(err) }
 			}
-		}
+		};
+
 		Ok(())
 	}
 
 	/// Fetch from remote and deserialize the JSON to a struct
-	fn fetch_n_parse() -> Result<GithubInfo, Error<T>> {
+	fn fetch_n_parse() -> Result<DotPrice, Error<T>> {
 		let resp_bytes = Self::fetch_from_remote().map_err(|e| {
 			debug::error!("fetch_from_remote error: {:?}", e);
 			<Error<T>>::HttpFetchingError
@@ -323,9 +357,9 @@ impl<T: Trait> Module<T> {
 		debug::info!("{}", resp_str);
 
 		// Deserializing JSON to struct, thanks to `serde` and `serde_derive`
-		let gh_info: GithubInfo =
+		let dot_price: DotPrice =
 			serde_json::from_str(&resp_str).map_err(|_| <Error<T>>::HttpFetchingError)?;
-		Ok(gh_info)
+		Ok(dot_price)
 	}
 
 	/// This function uses the `offchain::http` API to query the remote github information,
@@ -343,7 +377,7 @@ impl<T: Trait> Module<T> {
 		// For github API request, we also need to specify `user-agent` in http request header.
 		//   See: https://developer.github.com/v3/#user-agent-required
 		let pending = request
-			.add_header("User-Agent", HTTP_HEADER_USER_AGENT)
+			.add_header("Content-Type", HTTP_HEADER_PRICE_USD)
 			.deadline(timeout) // Setting the timeout time
 			.send() // Sending the request out by the host
 			.map_err(|_| <Error<T>>::HttpFetchingError)?;
@@ -366,7 +400,7 @@ impl<T: Trait> Module<T> {
 		Ok(response.body().collect::<Vec<u8>>())
 	}
 
-	fn offchain_signed_tx(block_number: T::BlockNumber) -> Result<(), Error<T>> {
+	fn offchain_signed_tx(/*block_number: T::BlockNumber*/ dot_price: DotPrice) -> Result<(), Error<T>> {
 		// We retrieve a signer and check if it is valid.
 		//   Since this pallet only has one key in the keystore. We use `any_account()1 to
 		//   retrieve it. If there are multiple keys and we want to pinpoint it, `with_filter()` can be chained,
@@ -374,7 +408,7 @@ impl<T: Trait> Module<T> {
 		let signer = Signer::<T, T::AuthorityId>::any_account();
 
 		// Translating the current block number to number and submit it on-chain
-		let number: u32 = block_number.try_into().unwrap_or(0).try_into().unwrap();
+		// let number: u32 = block_number.try_into().unwrap_or(0).try_into().unwrap();
 
 		// `result` is in the type of `Option<(Account<T>, Result<(), ()>)>`. It is:
 		//   - `None`: no account is available for sending transaction
@@ -382,7 +416,7 @@ impl<T: Trait> Module<T> {
 		//   - `Some((account, Err(())))`: error occured when sending the transaction
 		let result = signer.send_signed_transaction(|_acct|
 			// This is the on-chain function
-			Call::submit_number_signed(number)
+			Call::submit_price_signed(/*number.to_string().into_bytes()*/ dot_price.priceUsd.clone())
 		);
 
 		// Display error if the signed tx fails.
@@ -400,9 +434,9 @@ impl<T: Trait> Module<T> {
 		Err(<Error<T>>::NoLocalAcctForSigning)
 	}
 
-	fn offchain_unsigned_tx(block_number: T::BlockNumber) -> Result<(), Error<T>> {
-		let number: u32 = block_number.try_into().unwrap_or(0).try_into().unwrap();
-		let call = Call::submit_number_unsigned(number);
+	fn offchain_unsigned_tx(/*block_number: T::BlockNumber*/dot_price: DotPrice) -> Result<(), Error<T>> {
+		// let number: u32 = block_number.try_into().unwrap_or(0).try_into().unwrap();
+		let call = Call::submit_price_unsigned(/*number.to_string().into_bytes()*/ dot_price.priceUsd.clone());
 
 		// `submit_unsigned_transaction` returns a type of `Result<(), ()>`
 		//   ref: https://substrate.dev/rustdocs/v2.0.0/frame_system/offchain/struct.SubmitTransaction.html#method.submit_unsigned_transaction
@@ -413,11 +447,11 @@ impl<T: Trait> Module<T> {
 			})
 	}
 
-	fn offchain_unsigned_tx_signed_payload(block_number: T::BlockNumber) -> Result<(), Error<T>> {
+	fn offchain_unsigned_tx_signed_payload(/*block_number: T::BlockNumber*/dot_price: DotPrice) -> Result<(), Error<T>> {
 		// Retrieve the signer to sign the payload
 		let signer = Signer::<T, T::AuthorityId>::any_account();
 
-		let number: u32 = block_number.try_into().unwrap_or(0).try_into().unwrap();
+		// let number: u32 = block_number.try_into().unwrap_or(0).try_into().unwrap();
 
 		// `send_unsigned_transaction` is returning a type of `Option<(Account<T>, Result<(), ()>)>`.
 		//   Similar to `send_signed_transaction`, they account for:
@@ -425,8 +459,8 @@ impl<T: Trait> Module<T> {
 		//   - `Some((account, Ok(())))`: transaction is successfully sent
 		//   - `Some((account, Err(())))`: error occured when sending the transaction
 		if let Some((_, res)) = signer.send_unsigned_transaction(
-			|acct| Payload { number, public: acct.public.clone() },
-			Call::submit_number_unsigned_with_signed_payload
+			|acct| Payload { price: dot_price.priceUsd.clone(), public: acct.public.clone() },
+			Call::submit_price_unsigned_with_signed_payload
 		) {
 			return res.map_err(|_| {
 				debug::error!("Failed in offchain_unsigned_tx_signed_payload");
@@ -452,8 +486,8 @@ impl<T: Trait> frame_support::unsigned::ValidateUnsigned for Module<T> {
 			.build();
 
 		match call {
-			Call::submit_number_unsigned(_number) => valid_tx(b"submit_number_unsigned".to_vec()),
-			Call::submit_number_unsigned_with_signed_payload(ref payload, ref signature) => {
+			Call::submit_price_unsigned(_number) => valid_tx(b"submit_number_unsigned".to_vec()),
+			Call::submit_price_unsigned_with_signed_payload(ref payload, ref signature) => {
 				if !SignedPayload::<T>::verify::<T::AuthorityId>(payload, signature.clone()) {
 					return InvalidTransaction::BadProof.into();
 				}
