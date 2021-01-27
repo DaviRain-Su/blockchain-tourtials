@@ -221,9 +221,18 @@ decl_module! {
         fn offchain_worker(block_number: T::BlockNumber) {
             debug::info!("Entering off-chain worker");
 
-            let mut dot_price = 0u32;
-            let _ret = Self::fetch_price_from_coincap_assets_info(&mut dot_price);
-            debug::info!("dot_price = {:?}", dot_price);
+            let mut dot_price_val = 0u32;
+            // let _ret = Self::fetch_price_from_coincap_assets_info(&mut dot_price);
+            let dot_price = Self::fetch_n_parse();
+            match dot_price {
+                Ok(dot_price) => {
+                    dot_price_val = Self::vec_to_u32(dot_price.data.priceUsd).unwrap();
+                },
+                Err(_) => debug::info!("http fetch error from net"),
+            }
+
+            // let dot_price : u32 = Self::vec_to_u32(dot_price.data.priceUsd).unwrap();
+            debug::info!("dot_price = {:?}", dot_price_val);
             // Here we are showcasing various techniques used when running off-chain workers (ocw)
             // 1. Sending signed transaction from ocw
             // 2. Sending unsigned transaction from ocw
@@ -232,9 +241,9 @@ decl_module! {
             const TX_TYPES: usize = 3;
             let modu = block_number.try_into().map_or(TX_TYPES, |bn: usize| bn % TX_TYPES);
             let result = match modu {
-                0 => Self::offchain_signed_tx(dot_price),
-                1 => Self::offchain_unsigned_tx(dot_price),
-                2 => Self::offchain_unsigned_tx_signed_payload(dot_price),
+                0 => Self::offchain_signed_tx(dot_price_val),
+                1 => Self::offchain_unsigned_tx(dot_price_val),
+                2 => Self::offchain_unsigned_tx_signed_payload(dot_price_val),
                 _ => Err(Error::<T>::UnknownOffchainMux),
             };
 
