@@ -272,6 +272,10 @@ impl pallet_template::Trait for Runtime {
     type Event = Event;
 }
 
+impl pallet_benchmarking::Trait for Runtime {
+    type Event = Event;
+}
+
 parameter_types! {
     pub const NewKittyReserve: u32 = 5000000;
 }
@@ -310,6 +314,7 @@ construct_runtime!(
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         // Include the custom logic from the template pallet in the runtime.
         TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
+        BenchMarking: pallet_benchmarking::{Module, Call, Storage, Event<T>},
         PoeModule: pallet_poe::{Module, Call, Storage, Event<T>},
         KittiesModule: pallet_kitties::{Module, Call, Storage, Event<T>},
     }
@@ -501,7 +506,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, pallet_balances, Balances);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
-            add_benchmark!(params, batches, pallet_benchmark_demo, BenchMarkDemo);
+            add_benchmark!(params, batches, pallet_benchmarking, BenchMarking);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

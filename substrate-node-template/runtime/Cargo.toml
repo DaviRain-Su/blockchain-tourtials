@@ -27,6 +27,7 @@ serde = { features = ['derive'], optional = true, version = '1.0.101' }
 pallet-template = { path = '../pallets/template', default-features = false, version = '2.0.0' }
 pallet-poe = { path = '../pallets/poe', default-features = false, version = '2.0.0' }
 pallet-kitties = { path = '../pallets/kitties', default-features = false, version = '2.0.0' }
+pallet-benchmarking = { path = '../pallets/benchmarking', default-features = false, version = '2.0.0' }
 
 # Substrate dependencies
 frame-benchmarking = { default-features = false, optional = true, version = '2.0.0' }
@@ -66,6 +67,7 @@ runtime-benchmarks = [
     'pallet-balances/runtime-benchmarks',
     'pallet-timestamp/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
+    'pallet-benchmarking/runtime-benchmarks',
 ]
 std = [
     'codec/std',
@@ -84,6 +86,7 @@ std = [
     'pallet-balances/std',
     'pallet-timestamp/std',
 
+
     'pallet-transaction-payment/std',
     'pallet-transaction-payment-rpc-runtime-api/std',
     'sp-api/std',
@@ -101,4 +104,5 @@ std = [
     # local pallet
     'pallet-template/std',
     'pallet-poe/std',
+    'pallet-benchmarking/std',
 ]
