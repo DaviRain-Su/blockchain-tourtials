@@ -6,10 +6,63 @@ use ink_env::Environment;
 use ink_lang as ink;
 
 
-type AccountId = <ink_env::DefaultEnvironment as Environment>::AccountId;
+#[ink::chain_extension]
+pub trait FetchErc20 {
+    type ErrorCode = Erc20Error;
 
-#[ink::contract]
+    /// Note: this gives the operation a corresponding func_id (1101 in this case),
+    /// and the chain-side chain_extension will get the func_id to do further operations.
+    #[ink(extension = 1101, returns_result = false)]
+    fn fetch_random() -> [u8; 32];
+}
+
+// #[derive(Debug, Copy, Clone, PartialEq, Eq, scale::Encode, scale::Decode)]
+// #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+// pub enum Erc20ReadErr {
+//     FailGetRandomSource,
+// }
+
+//定义的错误类型
+#[derive(Debug, Copy, Clone, PartialEq, Eq, scale::Encode, scale::Decode)]
+#[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+pub enum Erc20Error {
+    InSufficientBalance,
+    InSufficientAllowence,
+}
+
+impl ink_env::chain_extension::FromStatusCode for Erc20Error {
+    fn from_status_code(status_code: u32) -> Result<(), Self> {
+        match status_code {
+            0 => Ok(()),
+            1 => Err(Self::InSufficientBalance),
+            2 => Err(Self::InSufficientAllowence),
+            _ => panic!("encountered unknown status code"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
+pub enum CustomEnvironment {}
+
+impl Environment for CustomEnvironment {
+    const MAX_EVENT_TOPICS: usize =
+        <ink_env::DefaultEnvironment as Environment>::MAX_EVENT_TOPICS;
+
+    type AccountId = <ink_env::DefaultEnvironment as Environment>::AccountId;
+    type Balance = <ink_env::DefaultEnvironment as Environment>::Balance;
+    type Hash = <ink_env::DefaultEnvironment as Environment>::Hash;
+    type BlockNumber = <ink_env::DefaultEnvironment as Environment>::BlockNumber;
+    type Timestamp = <ink_env::DefaultEnvironment as Environment>::Timestamp;
+
+    type ChainExtension = ();
+}
+
+
+#[ink::contract(env = crate::CustomEnvironment)]
 mod erc20 {
+
+    use super::Erc20Error;
 
     use ink_storage::collections::HashMap as StorageHashMap;
 
@@ -42,15 +95,7 @@ mod erc20 {
         value: Balance,
     }
 
-    //定义的错误类型
-    #[derive(Debug, PartialEq, Eq, scale::Encode)]
-    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
-    pub enum Error {
-        InSufficientBalance,
-        InSufficientAllowence,
-    }
-
-    type Result<T> = core::result::Result<T, Error>;
+    type Result<T> = core::result::Result<T, Erc20Error>;
 
     impl Erc20 {
         
@@ -116,7 +161,7 @@ mod erc20 {
             
             // 确保caller的持有的value数量一定大于spender持有的value数量的
             if caller_balance < value {
-                return Err(Error::InSufficientBalance);
+                return Err(Erc20Error::InSufficientBalance);
             }
 
             // 插入 ：拥有者可以向花费者转移的value
@@ -146,7 +191,7 @@ mod erc20 {
             let allowance = self.allowance_of(from, to);
             // 如果查到余额不足，抛出错误
             if allowance < value {
-                return Err(Error::InSufficientAllowence);
+                return Err(Erc20Error::InSufficientAllowence);
             }
 
             // 更新allowance函数
@@ -168,7 +213,7 @@ mod erc20 {
             // 判断from是不是有足够的余额可以向to转账
             let from_balance = self.balance_of(from.clone());
             if from_balance < value {
-                return Err(Error::InSufficientBalance);
+                return Err(Erc20Error::InSufficientBalance);
             }
 
             // 更新from账户对应的balance余额
