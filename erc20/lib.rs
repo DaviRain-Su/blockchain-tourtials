@@ -2,25 +2,33 @@
 //! 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use ink_env::Environment;
+use ink_env::{Environment};
 use ink_lang as ink;
 
+
+// type Balance = <ink_env::DefaultEnvironment as Environment>::Balance;
 
 #[ink::chain_extension]
 pub trait FetchErc20 {
     type ErrorCode = Erc20Error;
 
-    /// Note: this gives the operation a corresponding func_id (1101 in this case),
-    /// and the chain-side chain_extension will get the func_id to do further operations.
+    // #[ink(extension = 1101, returns_result = false)]
+    // fn transfer(to: AccountId, value: Balance);
+    //
+    // #[ink(extension = 1102, returns_result = false)]
+    // fn transfer_from(from: AccountId, to: AccountId, value: Balance);
+    //
+    // #[ink(extension = 1103, returns_result = false)]
+    // fn transfer_help(from: AccountId, to: AccountId, value: Balance);
+    //
+    // #[ink(extension = 1104, returns_result = false)]
+    // fn allowance(to: AccountId, value: Balance);
+
     #[ink(extension = 1101, returns_result = false)]
     fn fetch_random() -> [u8; 32];
 }
 
-// #[derive(Debug, Copy, Clone, PartialEq, Eq, scale::Encode, scale::Decode)]
-// #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
-// pub enum Erc20ReadErr {
-//     FailGetRandomSource,
-// }
+
 
 //定义的错误类型
 #[derive(Debug, Copy, Clone, PartialEq, Eq, scale::Encode, scale::Decode)]
@@ -55,7 +63,7 @@ impl Environment for CustomEnvironment {
     type BlockNumber = <ink_env::DefaultEnvironment as Environment>::BlockNumber;
     type Timestamp = <ink_env::DefaultEnvironment as Environment>::Timestamp;
 
-    type ChainExtension = ();
+    type ChainExtension = FetchErc20;
 }
 
 
@@ -75,6 +83,8 @@ mod erc20 {
         balances: StorageHashMap<AccountId, Balance>,
         // 允许一个账户向一个账户转账的金额
         allowance: StorageHashMap<(AccountId, AccountId), Balance>,
+        // randoms
+        value: [u8; 32],
     }
 
     // 定义的事件类型
@@ -95,6 +105,13 @@ mod erc20 {
         value: Balance,
     }
 
+    // for random
+    #[ink(event)]
+    pub struct RandomUpdated {
+        #[ink(topic)]
+        new: [u8; 32],
+    }
+
     type Result<T> = core::result::Result<T, Erc20Error>;
 
     impl Erc20 {
@@ -103,7 +120,7 @@ mod erc20 {
         #[ink(constructor)]
         pub fn new(total_supply: Balance) -> Self {
 
-            // let caller = Self::env().caller(); 获得合约调用者AccountId
+            // 获得合约调用者AccountId
             let caller = Self::env().caller();
             
             // 在创建时讲总供给量默认与合约的创建者做绑定
@@ -121,6 +138,7 @@ mod erc20 {
                 total_supply,
                 balances,
                 allowance: StorageHashMap::new(),
+                value: Default::default(),
             }
         }
 
@@ -148,7 +166,7 @@ mod erc20 {
             let caller = self.env().caller();
 
             self.transfer_helper(caller, to, value)?;
-            
+
             Ok(())
         }
 
@@ -156,9 +174,9 @@ mod erc20 {
         #[ink(message)]
         pub fn allowance(&mut self, spender: AccountId, value: Balance) -> Result<()> {
             let caller = self.env().caller();
-            
+
             let caller_balance = self.balance_of(caller.clone());
-            
+
             // 确保caller的持有的value数量一定大于spender持有的value数量的
             if caller_balance < value {
                 return Err(Erc20Error::InSufficientBalance);
@@ -166,14 +184,13 @@ mod erc20 {
 
             // 插入 ：拥有者可以向花费者转移的value
             self.allowance.insert((caller, spender), value);
-            
+
             // 发送事件
             self.env().emit_event(Approve {
                 owner: caller,
                 spender: spender,
                 value: value,
             });
-            
             Ok(())
         }
 
@@ -186,8 +203,8 @@ mod erc20 {
             to: AccountId,
             value: Balance,
         ) -> Result<()> {
-            
-            // 先做判断，判断是不是有足够的余额可以从from到to的余额转账
+
+            //先做判断，判断是不是有足够的余额可以从from到to的余额转账
             let allowance = self.allowance_of(from, to);
             // 如果查到余额不足，抛出错误
             if allowance < value {
@@ -196,9 +213,9 @@ mod erc20 {
 
             // 更新allowance函数
             self.allowance.insert((from, to), allowance - value);
-            
+
             self.transfer_helper(from, to, value)?;
-            
+
             Ok(())
         }
 
@@ -218,19 +235,36 @@ mod erc20 {
 
             // 更新from账户对应的balance余额
             self.balances.insert(from, from_balance - value);
-            
+
             let to_balance = self.balance_of(to);
             // 更新to账户对应的balance余额
             self.balances.insert(to, to_balance + value);
-            
+
             // 发送事件
             self.env().emit_event(Transfer {
                 from: Some(from),
                 to: Some(to),
                 value: value,
             });
-            
+
+
             Ok(())
+        }
+
+        #[ink(message)]
+        pub fn update_random(&mut self) -> Result<()> {
+            // Get the on-chain random seed
+            let new_random = self.env().extension().fetch_random()?;
+            self.value = new_random;
+            // emit the RandomUpdated event when the random seed
+            // is successfully fetched.
+            self.env().emit_event(RandomUpdated { new: new_random });
+            Ok(())
+        }
+
+        #[ink(message)]
+        pub fn get_random(&self) -> [u8; 32] {
+            self.value
         }
     }
 
