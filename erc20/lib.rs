@@ -2,7 +2,11 @@
 //! 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use ink_env::Environment;
 use ink_lang as ink;
+
+
+type AccountId = <ink_env::DefaultEnvironment as Environment>::AccountId;
 
 #[ink::contract]
 mod erc20 {
