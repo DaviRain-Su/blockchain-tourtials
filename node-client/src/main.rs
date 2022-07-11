@@ -1,5 +1,5 @@
 
-use codec::Decode;
+use codec::{Decode, Encode};
 use subxt::{
     rpc::Rpc,
     storage::{
@@ -34,19 +34,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     println!("\nExample 2. Obtained keys:");
+    let prefix = StorageKeyPrefix::new::<node_template::ibc::storage::SomeMap>();
+    println!("prefix len = {:?}", prefix.0.)
     while let Some((mut key, (value_1, value_2))) = iter.next().await? {
-        println!("Key: 0x{}", hex::encode(&key));
+        // println!("Key: 0x{}", hex::encode(&key));
+        let mut raw_key = key.0[16..].to_vec();
+        println!("key: {}", u32::decode(&mut &*raw_key).unwrap());
         println!("  Value: {:?}", (value_1, value_2));
-    }
-
-    let mut iter = storage
-        .iter::<node_template::ibc::storage::Something>(None)
-        .await?;
-
-    println!("\nExample 2. Obtained keys:");
-    while let Some((key, value)) = iter.next().await? {
-        println!("Key: 0x{}", hex::encode(&key));
-        println!("  Value: {}", value);
     }
 
     println!("hello, world!");
