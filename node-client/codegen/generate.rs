@@ -3687,7 +3687,7 @@ pub mod api {
             impl ::subxt::StorageEntry for SomeMap<'_> {
                 const PALLET: &'static str = "Ibc";
                 const STORAGE: &'static str = "SomeMap";
-                type Value = ::core::primitive::u32;
+                type Value = (::core::primitive::u32, ::core::primitive::u32);
                 fn key(&self) -> ::subxt::StorageEntryKey {
                     ::subxt::StorageEntryKey::Map(vec![::subxt::StorageMapKey::new(
                         &self.0,
@@ -3727,13 +3727,16 @@ pub mod api {
                     &self,
                     _0: &::core::primitive::u32,
                     block_hash: ::core::option::Option<T::Hash>,
-                ) -> ::core::result::Result<::core::primitive::u32, ::subxt::BasicError>
-                {
+                ) -> ::core::result::Result<
+                    (::core::primitive::u32, ::core::primitive::u32),
+                    ::subxt::BasicError,
+                > {
                     if self.client.metadata().storage_hash::<SomeMap>()?
                         == [
-                            215u8, 216u8, 69u8, 77u8, 132u8, 39u8, 30u8, 117u8, 4u8, 8u8, 64u8,
-                            189u8, 7u8, 77u8, 146u8, 215u8, 205u8, 136u8, 76u8, 246u8, 230u8,
-                            141u8, 25u8, 58u8, 53u8, 23u8, 107u8, 88u8, 22u8, 31u8, 40u8, 121u8,
+                            52u8, 164u8, 91u8, 20u8, 189u8, 190u8, 104u8, 197u8, 148u8, 65u8,
+                            148u8, 101u8, 28u8, 172u8, 106u8, 77u8, 216u8, 156u8, 201u8, 27u8,
+                            100u8, 214u8, 223u8, 114u8, 174u8, 253u8, 40u8, 183u8, 88u8, 84u8,
+                            82u8, 224u8,
                         ]
                     {
                         let entry = SomeMap(_0);
@@ -3752,9 +3755,10 @@ pub mod api {
                 {
                     if self.client.metadata().storage_hash::<SomeMap>()?
                         == [
-                            215u8, 216u8, 69u8, 77u8, 132u8, 39u8, 30u8, 117u8, 4u8, 8u8, 64u8,
-                            189u8, 7u8, 77u8, 146u8, 215u8, 205u8, 136u8, 76u8, 246u8, 230u8,
-                            141u8, 25u8, 58u8, 53u8, 23u8, 107u8, 88u8, 22u8, 31u8, 40u8, 121u8,
+                            52u8, 164u8, 91u8, 20u8, 189u8, 190u8, 104u8, 197u8, 148u8, 65u8,
+                            148u8, 101u8, 28u8, 172u8, 106u8, 77u8, 216u8, 156u8, 201u8, 27u8,
+                            100u8, 214u8, 223u8, 114u8, 174u8, 253u8, 40u8, 183u8, 88u8, 84u8,
+                            82u8, 224u8,
                         ]
                     {
                         self.client.storage().iter(block_hash).await
@@ -5545,9 +5549,9 @@ pub mod api {
         pub fn validate_metadata(&'a self) -> Result<(), ::subxt::MetadataError> {
             if self.client.metadata().metadata_hash(&PALLETS)
                 != [
-                    162u8, 95u8, 254u8, 12u8, 34u8, 1u8, 87u8, 146u8, 86u8, 61u8, 177u8, 121u8,
-                    216u8, 197u8, 247u8, 131u8, 148u8, 65u8, 225u8, 98u8, 204u8, 188u8, 103u8,
-                    59u8, 213u8, 194u8, 99u8, 159u8, 145u8, 20u8, 209u8, 226u8,
+                    193u8, 56u8, 167u8, 55u8, 159u8, 132u8, 176u8, 0u8, 71u8, 51u8, 169u8, 157u8,
+                    177u8, 197u8, 151u8, 93u8, 106u8, 217u8, 236u8, 121u8, 24u8, 160u8, 201u8,
+                    90u8, 245u8, 219u8, 191u8, 246u8, 253u8, 18u8, 239u8, 8u8,
                 ]
             {
                 Err(::subxt::MetadataError::IncompatibleMetadata)

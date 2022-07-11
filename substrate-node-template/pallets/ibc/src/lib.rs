@@ -40,7 +40,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn value)]
-	pub type SomeMap<T> = StorageMap<_, Blake2_128Concat, u32, u32, ValueQuery>;
+	pub type SomeMap<T> = StorageMap<_, Blake2_128Concat, u32, (u32, u32), ValueQuery>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
@@ -81,7 +81,7 @@ pub mod pallet {
 			<Something<T>>::put(something);
 
 			// Update storage map.
-			<SomeMap<T>>::insert(something, something + 1);
+			<SomeMap<T>>::insert(something, (something, something + 1));
 
 			// Emit an event.
 			Self::deposit_event(Event::SomethingStored(something, who.clone()));

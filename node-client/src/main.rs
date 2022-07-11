@@ -34,9 +34,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     println!("\nExample 2. Obtained keys:");
-    while let Some((mut key, value)) = iter.next().await? {
+    while let Some((mut key, (value_1, value_2))) = iter.next().await? {
         println!("Key: 0x{}", hex::encode(&key));
-        println!("  Value: {}", value);
+        println!("  Value: {:?}", (value_1, value_2));
     }
 
     let mut iter = storage
