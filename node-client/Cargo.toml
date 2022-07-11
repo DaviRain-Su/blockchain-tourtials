@@ -6,3 +6,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+subxt = { git = "https://github.com/paritytech/subxt.git", branch = "master"}
+tokio = { version = "1.8", features = ["rt-multi-thread", "macros", "time"] }
+sp-keyring = "6.0.0"
+futures = "0.3.13"
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive", "full", "bit-vec"] }
+hex = "0.4.3"
+tracing-subscriber = "0.3.11"
+
+[patch.crates-io]
+sp-core = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25"  }
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25"  }
+sp-keyring = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25"  }
+
