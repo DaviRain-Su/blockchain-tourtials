@@ -34,11 +34,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     println!("\nExample 2. Obtained keys:");
-    let prefix = StorageKeyPrefix::new::<node_template::ibc::storage::SomeMap>();
-    println!("prefix len = {:?}", prefix.0.)
+
+    // prefix(32) + hash(data)(16) + data
     while let Some((mut key, (value_1, value_2))) = iter.next().await? {
         // println!("Key: 0x{}", hex::encode(&key));
-        let mut raw_key = key.0[16..].to_vec();
+        let mut raw_key = key.0[48..].to_vec();
         println!("key: {}", u32::decode(&mut &*raw_key).unwrap());
         println!("  Value: {:?}", (value_1, value_2));
     }
