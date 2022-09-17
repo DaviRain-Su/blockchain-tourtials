@@ -1,6 +1,6 @@
 # Pallets 
 
-Pallet是在FRAME运行时使用的单独的运行时逻辑块。在recipe的这一部分你将了解他们。
+Pallet adalah FRAME运行时使用的单独的运行时逻辑块。在recipe的这一部分你将了解他们。
 
 ## 1.1 Hello Substrate 
 
