@@ -1,5 +1,5 @@
 # substrate-course
-This is Substrate course tourtial.
+this is Substrate course tourtial.
 
 [Substrate 区块链开发入门](./substrate-note.md)
 
