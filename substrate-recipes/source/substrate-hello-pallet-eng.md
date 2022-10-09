@@ -1,6 +1,6 @@
 # Pallets 
 
-The pallet is a separate runtime logical block used at FRAME runtime. In this part of the recipe, you will learn about them.
+THE pallet is a separate runtime logical block used at FRAME runtime. In this part of the recipe, you will learn about them.
 
 ## 1.1 Hello Substrate 
 

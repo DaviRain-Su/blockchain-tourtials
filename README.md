@@ -1,59 +1,59 @@
-# Substrate-Course
+# substrate-course
 This is Substrate course tourtial.
 
-[Introduction to Substrate Blockchain Development](./substrate-note.md)
+[Substrate 区块链开发入门](./substrate-note.md)
 
-[Substrate Recipes](./substrate-recipes/README.md)
+[Substrate Recipes 中文	](./substrate-recipes/README.md)
 
-[Under chain working machine](./off-chain-worker.md)
+[链下工作机](./off-chain-worker.md)
 
-## Resources Outside the Warehouse
+## 仓库外的资源
 
-[Proficient in Bitcoin](https://book.8btc.com/books/1/master_bitcoin/_book/)
+[精通比特币](https://book.8btc.com/books/1/master_bitcoin/_book/)
 
-## Knowledge to be Learned
+## 需要学习的知识
 
-[The knowledge that blockchain needs to master](./blockchain-require.md)
+[区块链需要掌握的知识](./blockchain-require.md)
 
-## Substrate Pallet Learning Notes
+## Substrate Pallet 学习笔记
 
-[Substrate Pallet Learning Notes](./Note.md)
+[substrate pallet 学习笔记](./Note.md)
 
-[Crate of Substrate](./substrate-crate.md)
+[Substrate的crate](./substrate-crate.md)
 
-[Introduction to Substrate Pallet](./substrate-pallets.md)
+[Substrate Pallet介绍](./substrate-pallets.md)
 
-## Rust Learning Notes
+## Rust 学习笔记
 
-[Rust Learning Notes](./rust-std-node.md)
+[Rust std 学习笔记](./rust-std-node.md)
 
-## Sorting Out of Substrate Learning Resources
+## Substrate 学习资源整理
 
-[Sorting Out of Substrate Learning Resources](./substrate-tourtials.md)
-
-
-
-## ubstrate Introductory Course
+[substrate 学习资源整理](./substrate-tourtials.md)
 
 
 
-## Substrate Advanced Course
+## Substrate 入门课
 
-[Guide to Substrate Advanced Course](./advance-course/substrate-guide.md)
 
-[Directory of Substrate Advanced Course](./advance-course/advance-course.md)
 
-[Poe Tutorial](./advance-course/Proof-of-Existence.md)
+## Substrate 进阶课
 
-[Kitties Tutorial](./advance-course/substrate-kitties.md)
+[Substrate 进阶课程导读](./advance-course/substrate-guide.md)
 
-[Scale Codec](./advance-course/scale_code.md)
+[Substrate 进阶课目录](./advance-course/advance-course.md)
 
-[Introduction to Substrate Macro](./advance-course/substrate-macros.md)
+[Poe 教程](./advance-course/Proof-of-Existence.md)
 
-[Substrate Work Machine](./advance-course/substrate-off-chain-worker.md)
+[Kitties 教程](./advance-course/substrate-kitties.md)
 
-[Substrate Storage](./advance-course/substrate-stotrage.md)
+[Scale Codec 编解码](./advance-course/scale_code.md)
 
-[Substrate Weight and Cost](./advance-course/transfaction-free-and-weight.md)
+[Substrate 宏介绍](./advance-course/substrate-macros.md)
+
+[Substrate 链下工作机](./advance-course/substrate-off-chain-worker.md)
+
+[Substrate 存储](./advance-course/substrate-stotrage.md)
+
+[Substrate 权重和费用](./advance-course/transfaction-free-and-weight.md)
 
