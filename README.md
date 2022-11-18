@@ -1,14 +1,19 @@
-# substrate-course
+# 区块链技术资料
 
-This is Substrate course tourtial.
 
-[Substrate Recipes 中文	](./substrate-recipes/README.md)
+## 区块链技术
+
+[区块链技术](./block-chain-theory/SUMMARY.md)
 
 ## 仓库外的资源
 
 [精通比特币](https://book.8btc.com/books/1/master_bitcoin/_book/)
 
 ## Substrate 进阶课
+
+This is Substrate course tourtial.
+
+[Substrate Recipes 中文	](./substrate-recipes/README.md)
 
 [Substrate 进阶课程导读](./advance-course/substrate-guide.md)
 
@@ -27,4 +32,3 @@ This is Substrate course tourtial.
 [Substrate 存储](./advance-course/substrate-stotrage.md)
 
 [Substrate 权重和费用](./advance-course/transfaction-free-and-weight.md)
-
