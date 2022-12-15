@@ -32,3 +32,5 @@ This is Substrate course tourtial.
 [Substrate 存储](./advance-course/substrate-stotrage.md)
 
 [Substrate 权重和费用](./advance-course/transfaction-free-and-weight.md)
+
+## [Blockchain New](./blockchain-news/README.md)
